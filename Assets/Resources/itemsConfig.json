@@ -1,0 +1,36 @@
+{
+    "items":[
+        {
+            "itemId":1,
+            "itemName":"Pistol",
+            "description":"This is a Pistol.",
+            "icon":"Sprite/Weapons 2-Sheet_26",
+            "prefab":"Prefabs/Pistol",
+            "slotType":1
+        },
+        {
+            "itemId":2,
+            "itemName":"Shotgun",
+            "description":"This is a Shotgun.",
+            "icon":"Sprite/Weapons 2-Sheet_4",
+            "prefab":"Prefabs/Shotgun",
+            "slotType":1
+        },
+        {
+            "itemId":3,
+            "itemName":"HealingItem1",
+            "description":"This is a healing item. health + 30",
+            "icon":"Sprite/Watermelon_Col2",
+            "prefab":"Prefabs/HealingItem1",
+            "slotType":4
+        },
+        {
+            "itemId":4,
+            "itemName":"SelfHarmItem",
+            "description":"This is a self-harm skill. health - 30",
+            "icon":"Sprite/Skull_Col2",
+            "prefab":"Prefabs/SelfHarmItem",
+            "slotType":4
+        }
+    ]
+}
