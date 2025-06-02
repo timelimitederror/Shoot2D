@@ -27,7 +27,7 @@ public class ItemManager : MonoBehaviourSinqletonBase<ItemManager>
                 item.InitInfo(itemInfo.itemId, itemInfo.itemName, itemInfo.description, icon, (EquipmentSlotType)itemInfo.slotType);
                 itemDictionary[item.ItemId] = item;
                 item.gameObject.SetActive(false);
-                Debug.Log(item.ItemName + " " + item.Description);
+                //Debug.Log(item.ItemName + " " + item.Description);
             }
         }
     }

@@ -18,4 +18,9 @@ public class ItemUpdated
         this.passiveItems = passiveItems;
         this.armItems = armItems;
     }
+
+    public ItemUpdated()
+    {
+
+    }
 }

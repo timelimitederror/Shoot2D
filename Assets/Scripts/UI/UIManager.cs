@@ -8,10 +8,10 @@ public class UIManager : MonoBehaviourSinqletonBase<UIManager>
 
     public void OpenPackagePanel()
     {
-        if (packagePanel != null)
-        {
-            TimeManager.Instance.StopTime();
-            packagePanel.SetActive(true);
-        }
+        //if (packagePanel != null)
+        //{
+        //    TimeManager.Instance.StopTime();
+        //    packagePanel.SetActive(true);
+        //}
     }
 }

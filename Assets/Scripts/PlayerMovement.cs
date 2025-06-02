@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     // 武器
     [HideInInspector]
-    public List<Item> availableArms = new List<Item>();
+    public List<Item> arms = new List<Item>();
 
     private Vector2 input;
     private Vector2 mousePos;
@@ -64,6 +64,15 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>();
         thisRigidbody = GetComponent<Rigidbody2D>();
 
+        //EventBus.Subscribe(new System.Action<ItemUpdated>(thisEvent => // 背包UI没有实现
+        //{
+        //    thisEvent.head = head;
+        //    thisEvent.body = body;
+        //    thisEvent.activeItems = activeItems;
+        //    thisEvent.passiveItems = passiveItems;
+        //    thisEvent.armItems = arms;
+        //}));
+
         // 刷新UI
         UpdatePlayerHealthUI();
         UpdateActiveItemUI();
@@ -78,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
         SwitchGun();
         SwitchActiveItem();
         UseActiveItem();
-        OpenPackage();
+        //OpenPackage();
         input.x = Input.GetAxisRaw("Horizontal");
         input.y = Input.GetAxisRaw("Vertical");
 
@@ -102,27 +111,27 @@ public class PlayerMovement : MonoBehaviour
 
     void SwitchGun() // 按Q或E，在可使用的枪中切换
     {
-        if (availableArms.Count == 0)
+        if (arms.Count == 0)
         {
             return;
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            availableArms[gunNum].gameObject.SetActive(false);
+            arms[gunNum].gameObject.SetActive(false);
             if (--gunNum < 0)
             {
-                gunNum = availableArms.Count - 1;
+                gunNum = arms.Count - 1;
             }
-            availableArms[gunNum].gameObject.SetActive(true);
+            arms[gunNum].gameObject.SetActive(true);
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            availableArms[gunNum].gameObject.SetActive(false);
-            if (++gunNum > availableArms.Count - 1)
+            arms[gunNum].gameObject.SetActive(false);
+            if (++gunNum > arms.Count - 1)
             {
                 gunNum = 0;
             }
-            availableArms[gunNum].gameObject.SetActive(true);
+            arms[gunNum].gameObject.SetActive(true);
         }
     }
 
@@ -172,14 +181,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void OpenPackage() // 打开背包
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            UpdatePackageUI();
-            UIManager.Instance.OpenPackagePanel();
-        }
-    }
+    //void OpenPackage() // 打开背包 背包UI没有实现
+    //{
+    //    if (Input.GetKeyDown(KeyCode.Escape))
+    //    {
+    //        // UpdatePackageUI();
+    //        UIManager.Instance.OpenPackagePanel();
+    //    }
+    //}
 
     private void OnTriggerEnter2D(Collider2D other) // 碰撞检测 捡道具
     {
@@ -235,24 +244,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void AddGun(Item item) // 添加可用枪支 捡到的item直接回收
     {
-        for (int i = 0; i < availableArms.Count; i++) // 如果捡到的是已经有了的武器
+        for (int i = 0; i < arms.Count; i++) // 如果捡到的是已经有了的武器
         {
-            if (availableArms[i].ItemId == item.ItemId)
+            if (arms[i].ItemId == item.ItemId)
             {
                 if (item.Stackable) // 捡到同样的武器可以升级？
                 {
-                    availableArms[i].AddStack(1);
+                    arms[i].AddStack(1);
                 }
                 item.UnInitialize();
                 ObjectPool.Instance.PushObject(item.gameObject);
                 return;
             }
         }
-        availableArms.Add(item); // 捡到新武器，直接装备上
+        arms.Add(item); // 捡到新武器，直接装备上
         item.Initialize(this); // 初始化道具
-        availableArms[gunNum].gameObject.SetActive(false);
-        gunNum = availableArms.Count - 1;
-        availableArms[gunNum].gameObject.SetActive(true);
+        arms[gunNum].gameObject.SetActive(false);
+        gunNum = arms.Count - 1;
+        arms[gunNum].gameObject.SetActive(true);
     }
 
     private void AddActiveItem(Item item) // 添加主动道具
@@ -326,9 +335,9 @@ public class PlayerMovement : MonoBehaviour
             body.Recovery();
         }
 
-        for (int i = 0; i < availableArms.Count; i++)
+        for (int i = 0; i < arms.Count; i++)
         {
-            availableArms[i].Recovery();
+            arms[i].Recovery();
         }
         for (int i = 0; i < activeItems.Count; i++)
         {
@@ -348,9 +357,9 @@ public class PlayerMovement : MonoBehaviour
         {
             body.ApplyEffect();
         }
-        for (int i = 0; i < availableArms.Count; i++)
+        for (int i = 0; i < arms.Count; i++)
         {
-            availableArms[i].ApplyEffect();
+            arms[i].ApplyEffect();
         }
         for (int i = 0; i < passiveItems.Count; i++)
         {
@@ -360,14 +369,17 @@ public class PlayerMovement : MonoBehaviour
 
     public void RemoveArm(Item item)
     {
-        if (availableArms.Contains(item))
+        if (arms.Contains(item))
         {
             item.UnInitialize();
-            availableArms.Remove(item);
-            if (gunNum >= availableArms.Count)
+            arms.Remove(item);
+            if (gunNum >= arms.Count)
             {
                 gunNum = 0;
-                availableArms[gunNum].gameObject.SetActive(true);
+                if (arms.Count > 0)
+                {
+                    arms[gunNum].gameObject.SetActive(true);
+                }
             }
             ObjectPool.Instance.PushObject(item.gameObject);
             UpdateActiveItemUI();
@@ -383,7 +395,10 @@ public class PlayerMovement : MonoBehaviour
             if (activeItemNum >= activeItems.Count)
             {
                 activeItemNum = 0;
-                activeItems[activeItemNum].gameObject.SetActive(true);
+                if (activeItems.Count > 0)
+                {
+                    activeItems[activeItemNum].gameObject.SetActive(true);
+                }
             }
             ObjectPool.Instance.PushObject(item.gameObject);
             UpdateActiveItemUI();
@@ -400,10 +415,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void UpdatePackageUI() // 更新背包UI界面
-    {
-        EventBus.Publish(new ItemUpdated(head, body, activeItems, passiveItems, availableArms));
-    }
+    //public void UpdatePackageUI() // 更新背包UI界面
+    //{
+    //    EventBus.Publish(new ItemUpdated(head, body, activeItems, passiveItems, availableArms));
+    //}
 
     private void UpdateActiveItemUI() // 更新当前主动道具的UI
     {
